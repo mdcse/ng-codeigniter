@@ -1,0 +1,114 @@
+<div class="hotel-listing">
+	<div class="regi-main">
+		<div id="wrapper2">
+			<div class="my-account">
+				<div class="myaccount-outer ">
+					<div class="account-right-div">
+						<div class="dashboard-heading">
+							<h2>Update Student</h2>
+						</div>
+						<div class="dashboard-inner">
+							<span class="reg_span">
+								<div class="user-btn-div plus">
+									<a title="Add blog" href="#!logout"></i>Logout</a>
+								</div>
+							</span>
+							<span class="reg_span">
+								<div class="user-btn-div plus">
+									<a title="Add blog" href="#!list"></i>Listing</a>
+								</div>
+							</span>
+							<div class="main-dash-summry Edit-profile edit-dealer-prof dealer-edit">
+								<form name="admin_form" id="admin_form" novalidate="novalidate">
+									<div class="left-column">
+										<div class="input-row">
+											<div class="full">
+												<div class="input-block">
+													<label>Name: <span class="star">*</span></label>
+													<span class="reg_span">
+														<input type="text" name="name" value="" id="name"
+															class="inputbox-main" ng-model="name" required>
+														<span
+															ng-show="admin_form.name.$touched || admin_form.$submitted"
+															class="error">
+															<span ng-show="admin_form.name.$error.required">
+																Name is required
+															</span>
+														</span>
+													</span>
+												</div>
+											</div>
+										</div>
+										<div class="input-row ">
+											<div class="full">
+												<div class="input-block">
+													<label>Username: <span class="star">*</span></label>
+													<span class="reg_span">
+														<input type="text" name="username" value="" id="username"
+															class="inputbox-main" ng-model="username" required>
+														<span
+															ng-show="admin_form.username.$touched || admin_form.$submitted"
+															class="error">
+															<span ng-show="admin_form.username.$error.required">Username
+																is required</span>
+															<span ng-show="usernameexist">Username is not
+																available</span>
+														</span>
+													</span>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="right-column">
+										<div class="input-row">
+											<div class="full">
+												<div class="input-block">
+													<label>Email Id: <span class="star">*</span></label>
+													<span class="reg_span">
+														<input type="text" name="email" value="" id="email"
+															class="inputbox-main" ng-model="email" required>
+														<span
+															ng-show="admin_form.email.$touched || admin_form.$submitted"
+															class="error">
+															<span ng-show="admin_form.email.$error.required">Email is
+																required</span>
+															<span ng-show="emailexist">Email already exist</span>
+														</span>
+													</span>
+												</div>
+											</div>
+										</div>
+										<div class="input-row">
+											<div class="full">
+												<div class="input-block">
+													<label>Password: <span class="star">*</span></label>
+													<span class="reg_span">
+														<input type="text" name="password" value="" id="password"
+															class="inputbox-main" ng-model="password" required>
+														<span
+															ng-show="admin_form.password.$touched || admin_form.$submitted"
+															class="error">
+															<span ng-show="admin_form.password.$error.required">Password
+																is required</span>
+														</span>
+													</span>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="submit-class">
+										<div class="full">
+											<input type="submit" value="Update" class="btn-submit btn"
+												ng-click="validate()">
+											<input type="button" value="Cancel" onclick="javascript:history.go(-1);"
+												class="btn-submit btn">
+										</div>
+									</div>
+							</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>

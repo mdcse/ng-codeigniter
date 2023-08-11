@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-route.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-cookies.js"></script>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<title>CRUD</title>
+	<link href="style.css" rel="stylesheet">
+	<style>
+		.error {
+			color: red;
+		}
+	</style>
+</head>
+
+<body ng-app="myApp">
+
+	<div ng-view> </div>
+
+</body>
+
+
+<script>
+	var app = angular.module('myApp', ['ngRoute', 'ngCookies']);
+	app.config(function ($routeProvider) {
+		$routeProvider
+			.when("/", {
+				templateUrl: 'list.html',
+				controller: 'listController'
+			})
+			.when('/list', {
+				templateUrl: 'list.html',
+				controller: 'listController'
+			})
+			.when('/add', {
+				templateUrl: 'add.html',
+				controller: 'addController'
+			})
+			.when('/update', {
+				templateUrl: 'update.html',
+				controller: 'updateController'
+			})
+			.when('/login', {
+				templateUrl: 'login.html',
+				controller: 'loginController'
+			})
+			.when('/logout', {
+				templateUrl: 'login.html',
+				controller: 'logoutController'
+			})
+	})
+	app.run(function ($rootScope, $cookies, $location) {
+		$rootScope.check_cookies = function () {
+			if ($cookies.get('token') == undefined) {
+				url = $location.absUrl();
+				$location.path('/login').replace();
+			}
+		}
+
+	})
+	app.controller('listController', function ($scope, $rootScope, $http, $cookies, $location) {
+		$rootScope.check_cookies();
+
+		$scope.delete = function (id) {
+			let data = { 'id': id };
+			$http.post('http://localhost/danish/api/index.php/Student_controller/delete', JSON.stringify(data), { headers: { 'token': $cookies.get('token') } })
+				.then(function (response) {
+					$scope.show();
+					if (response.data.error) {
+						url = $location.absUrl();
+						$location.path('/login').replace();
+					}
+				})
+		}
+
+		$scope.show = function () {
+			$http.get('http://localhost/danish/api/index.php/Student_controller/get', { headers: { 'token': $cookies.get('token') } })
+				.then(function (response) {
+					$scope.obj = response.data;
+					if (response.data.error) {
+						url = $location.absUrl();
+						$location.path('/login').replace();
+					}
+				})
+
+		}
+
+		$scope.search = function (key) {
+			let data = { 'key': key };
+			$http.post('http://localhost/danish/api/index.php/Student_controller/search', JSON.stringify(data), { headers: { 'token': $cookies.get('token') } })
+				.then(function (response) {
+					$scope.obj = response.data;
+					if (response.data.error) {
+						url = $location.absUrl();
+						$location.path('/login').replace();
+					}
+				})
+		}
+	})
+
+	app.controller('updateController', function ($scope, $rootScope, $location, $http, $cookies) {
+		$rootScope.check_cookies();
+
+		let udata = $location.search();
+		$http.post('http://localhost/danish/api/index.php/Student_controller/get', JSON.stringify(udata), { headers: { 'token': $cookies.get('token') } })
+			.then(function (response) {
+				if (response.data.error) {
+					url = $location.absUrl();
+					$location.path('/login').replace();
+				}
+				$scope.name = response.data.name;
+				$scope.email = response.data.email;
+				$scope.username = response.data.username;
+				$scope.password = response.data.password;
+				$scope.baseemail = response.data.email;
+				$scope.baseusername = response.data.username;
+				$scope.baseid = udata.id;
+			})
+		$scope.validate = function () {
+			if ($scope.admin_form.$valid) {
+				var data = {
+					'name': $scope.name,
+					'username': $scope.username,
+					'email': $scope.email,
+					'password': $scope.password,
+					'baseemail': $scope.baseemail,
+					'baseusername': $scope.baseusername,
+					'baseid': $scope.baseid
+				};
+				$scope.postdata(data);
+			}
+		}
+		$scope.postdata = function (data) {
+			$http.post('http://localhost/danish/api/index.php/Student_controller/update', JSON.stringify(data), { headers: { 'token': $cookies.get('token') } })
+				.then(function (response) {
+					res = response.data;
+					if (res.error == 'Login please') {
+						url = $location.absUrl();
+						$location.path('/login').replace();
+					} else if (res.error == 'Both') {
+						$scope.emailexist = true;
+						$scope.usernameexist = true;
+					} else if (res.error == 'Email') {
+						$scope.emailexist = true;
+						$scope.usernameexist = false;
+					} else if (res.error == 'Username') {
+						$scope.usernameexist = true;
+						$scope.emailexist = false;
+					} else {
+						url = $location.absUrl();
+						$location.path('/list').replace();
+					}
+				})
+		}
+	})
+
+	app.controller('addController', function ($scope, $rootScope, $http, $location, $cookies) {
+		$rootScope.check_cookies();
+
+		$scope.validate = function () {
+			if ($scope.admin_form.$valid) {
+				let data = {
+					'name': $scope.name,
+					'username': $scope.username,
+					'email': $scope.email,
+					'password': $scope.password,
+				};
+				$scope.postdata(data);
+			}
+		}
+		$scope.postdata = function (data) {
+			$http.post('http://localhost/danish/api/index.php/Student_controller/add', JSON.stringify(data), { 'headers': { 'token': $cookies.get('token') } })
+				.then(function (response) {
+					res = response.data;
+					if (res.error) {
+						if (data.email == res.data.email) {
+							$scope.emailexist = true;
+						} else {
+							$scope.emailexist = false;
+						}
+						if (data.username == res.data.username) {
+							$scope.usernameexist = true;
+						} else {
+							$scope.usernameexist = false;
+						}
+					} else {
+						url = $location.absUrl();
+						$location.path('/list').replace();
+					}
+				})
+		}
+	})
+
+	app.controller('loginController', function ($scope, $http, $cookies, $location) {
+		$scope.validate = function () {
+			if ($scope.admin_form.$valid) {
+				let data = {
+					'username': $scope.username,
+					'password': $scope.password
+				};
+				$scope.postdata(data);
+			}
+		}
+
+		$scope.postdata = function (data) {
+			$http.post('http://localhost/danish/api/index.php/Student_controller/login', JSON.stringify(data))
+				.then(function (response) {
+					if (response.data['token']) {
+						$cookies.put('token', response.data['token']);
+						url = $location.absUrl();
+						$location.path('/list').replace();
+					} else {
+						// to show invalid credential error
+						$scope.loginerror = true;
+					}
+				})
+		}
+
+	})
+
+	app.controller('logoutController', function ($http, $location, $cookies) {
+		$http.get('http://localhost/danish/api/index.php/Student_controller/logout', { headers: { 'token': $cookies.get('token') } })
+			.then(function (response) {
+				$cookies.remove('token');
+				url = $location.absUrl();
+				$location.path('/login').replace();
+			})
+
+	})
+</script>
